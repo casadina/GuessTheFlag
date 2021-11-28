@@ -76,7 +76,7 @@ struct ContentView: View {
             .alert("Game Over", isPresented: $gameOver) {
                 Button("Play Again", action: reset)
             } message: {
-                Text("Great job, your score was \(score)/8")
+                Text("Great job, your score was \(score)/5")
             }
         }
     }
@@ -93,6 +93,7 @@ struct ContentView: View {
         
         showingScore = true
         gameOver = endOfGame()
+        
     }
     
     func askQuestion() {
@@ -102,12 +103,16 @@ struct ContentView: View {
     }
     
     func endOfGame() -> Bool {
-        return round > 8
+        return round > 5
     }
     
     func reset() {
         score = 0
         round = 1
+        countries = ["Estonia", "France", "Germany",
+                    "Ireland", "Italy", "Nigeria",
+                    "Poland", "Russia", "Spain",
+                    "UK", "US"].shuffled()
     }
 }
     
