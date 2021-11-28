@@ -8,47 +8,61 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showingAlert = false
+    @State private var showingScore = false
+    @State private var scoreTitle = ""
+    
+    @State private var countries = ["Estonia", "France", "Germany",
+                                    "Ireland", "Italy", "Nigeria",
+                                    "Poland", "Russia", "Spain",
+                                    "UK", "US"].shuffled()
+    @ State private var correctAnswer = Int.random(in: 0...2)
     
     var body: some View {
-        VStack {
-            Button("Show Alert") {
-                showingAlert = true
+        ZStack {
+            LinearGradient(gradient: Gradient(colors: [.blue, .black]),
+                           startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            VStack(spacing: 30) {
+                VStack {
+                    Text("Tap the flag of")
+                        .foregroundColor(.white)
+                        .font(.subheadline.weight(.heavy))
+                    
+                    Text(countries[correctAnswer])
+                        .foregroundColor(.white)
+                        .font(.largeTitle.weight(.semibold))
+                }
+                ForEach(0..<3) { number in
+                    Button {
+                        flagTapped(number)
+                    } label: {
+                        Image(countries[number])
+                            .renderingMode(.original)
+                            .clipShape(Capsule())
+                            .shadow(radius: 5)
+                    }
+                }
             }
-            .alert("Important message", isPresented: $showingAlert) {
-                Button("Delete", role: .destructive) { }
-                Button("Cancel", role: .cancel) { }
-            } message: {
-                Text("Please read this.")
-            }
-            Button("Button 1") { }
-            .buttonStyle(.bordered)
-            Button("Button 2", role: .destructive) { }
-            .buttonStyle(.bordered)
-            Button("Button 3") { }
-            .buttonStyle(.borderedProminent)
-            .tint(.mint)
-            Button("Button 4", role: .destructive) { }
-            .buttonStyle(.borderedProminent)
-            Button {
-                print("Edit button was tapped")
-            } label: {
-                Label("Edit", systemImage: "pencil")
-            }
-            .buttonStyle(.bordered)
         }
-        Button {
-            print("Button was tapped")
-        } label: {
-            Text("Tap me!")
-                .padding()
-                .foregroundColor(.white)
-                .background(.red)
+        .alert(scoreTitle, isPresented: $showingScore) {
+            Button("Continue", action: askQuestion)
+        } message: {
+            Text("Your score is ???")
         }
     }
+    func flagTapped(_ number: Int) {
+        if number == correctAnswer {
+            scoreTitle = "Correct"
+        } else {
+            scoreTitle = "Wrong"
+        }
+        
+        showingScore = true
+    }
     
-    func executeDelete() {
-        print("Now deleting...")
+    func askQuestion() {
+        countries.shuffle()
+        correctAnswer = Int.random(in: 0...2)
     }
 }
     
