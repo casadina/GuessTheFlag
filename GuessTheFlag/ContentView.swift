@@ -20,6 +20,17 @@ struct ContentView: View {
     @State private var round = 1
     @State private var gameOver = false
     
+    struct CapsuleFlag: View {
+        var image: String
+        
+        var body: some View {
+            Image(image)
+                .renderingMode(.original)
+                .clipShape(Capsule())
+                .shadow(radius: 5)
+        }
+    }
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -48,10 +59,7 @@ struct ContentView: View {
                         Button {
                             flagTapped(number: number)
                         } label: {
-                            Image(countries[number])
-                                .renderingMode(.original)
-                                .clipShape(Capsule())
-                                .shadow(radius: 5)
+                            CapsuleFlag(image: countries[number])
                         }
                     }
                 }
