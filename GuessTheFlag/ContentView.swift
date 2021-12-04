@@ -19,6 +19,8 @@ struct ContentView: View {
     @State private var score = 0
     @State private var round = 1
     @State private var gameOver = false
+    @State private var animationAmount = 0.0
+    @State private var correctFlag = false
     
     struct CapsuleFlag: View {
         var image: String
@@ -43,10 +45,16 @@ struct ContentView: View {
                 Text("Guess the Flag")
                     .font(.largeTitle.bold())
                     .foregroundColor(.white)
-                Text ("Round: \(round)")
+                Text ("Round: \(round == 6 ? 5 : round)")
                     .foregroundColor(.white)
                     .font(.title.bold())
                 VStack(spacing: 15) {
+                    if round == 6 {
+                        Text("Game Over")
+                            .font(.largeTitle.bold())
+                            .foregroundColor(.red)
+                            
+                    } else {
                     VStack {
                         Text("Tap the flag of")
                             .foregroundStyle(.secondary)
@@ -56,11 +64,29 @@ struct ContentView: View {
                             .font(.largeTitle.weight(.semibold))
                     }
                     ForEach(0..<3) { number in
-                        Button {
-                            flagTapped(number: number)
-                        } label: {
-                            CapsuleFlag(image: countries[number])
+                        if number == correctAnswer {
+                            Button {
+                                self.animationAmount = 0
+                                withAnimation {
+                                    flagTapped(number: number)
+                                    self.animationAmount += 360
+                                }
+                            } label: {
+                                CapsuleFlag(image: countries[number])
+                            }
+                            .rotation3DEffect(.degrees(self.animationAmount), axis: (x: 0, y: 1, z: 0))
+                        } else {
+                            Button {
+                                self.animationAmount = 0
+                                withAnimation {
+                                    flagTapped(number: number)
+                                }
+                            } label: {
+                                CapsuleFlag(image: countries[number])
+                            }
+                            .opacity(showingScore ? 0.4 : 1)
                         }
+                    }
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -93,15 +119,13 @@ struct ContentView: View {
         if number == correctAnswer {
             scoreTitle = "Correct"
             score += 1
-            round += 1
+            
         } else {
             scoreTitle = "Sorry, that is incorrect!\nThe flag you chose was \(countries[number])"
-            round += 1
         }
-        
+        round += 1
         showingScore = true
         gameOver = endOfGame()
-        
     }
     
     func askQuestion() {
@@ -121,6 +145,7 @@ struct ContentView: View {
                     "Ireland", "Italy", "Nigeria",
                     "Poland", "Russia", "Spain",
                     "UK", "US"].shuffled()
+        showingScore = false
     }
 }
     
